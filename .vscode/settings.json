@@ -1,4 +1,4 @@
 {
   "html.format.wrapLineLength": 100,
-  "prettier.printWidth": 130
+  "prettier.printWidth": 100
 }

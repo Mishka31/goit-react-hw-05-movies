@@ -1,35 +1,36 @@
 import React from "react";
 import { Route, NavLink, Switch } from "react-router-dom";
-import Home from "./pages/home.js";
-import Search from "./pages/Search.js";
-import Films from "./pages/films.js";
-// import NotFound from "./pages/NotFound.js";
+import Home from "./pages/Home/home.js";
+import Search from "./pages/Search/Search.js";
+import NotFound from "./pages/NotFound/NotFound.js";
+import FilmDetails from "./Components/FilmDetails/FilmDetails.js";
+import { ToastContainer } from "react-toastify";
+import s from "./App.module.css";
+import Button from "@material-ui/core/Button";
 
 const App = () => (
   <>
-    <ul>
-      <li>
-        <NavLink exact to="/" className="NavLink" activeClassName="Link--active">
+    <div className={s.buttons}>
+      <NavLink exact to="/home" className="NavLink" activeClassName="Link--active">
+        <Button variant="contained" color="primary">
           Home
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/films" className="NavLink" activeClassName="Link--active">
-          Films
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/search" className="NavLink" activeClassName="Link--active">
+        </Button>
+      </NavLink>
+      <NavLink to="/search" className="NavLink" activeClassName="Link--active">
+        <Button variant="contained" color="primary">
           Search
-        </NavLink>
-      </li>
-    </ul>
+        </Button>
+      </NavLink>
+    </div>
+
     <Switch>
-      <Route exact path="/" component={Home} />
+      <Route path="/home/:id" component={FilmDetails} />
+      <Route path="/search/:id" component={FilmDetails} />
+      <Route path="/home" component={Home} />
       <Route path="/search" component={Search} />
-      <Route path="/films" component={Films} />
-      <Route component={Home} />
+      <Route component={NotFound} />
     </Switch>
+    <ToastContainer position="top-center" autoClose={3000} />
   </>
 );
 

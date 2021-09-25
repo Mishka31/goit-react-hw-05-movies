@@ -1,0 +1,17 @@
+.buttons {
+  width: 300px;
+  margin-top: 15px;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: 60px;
+  justify-content: space-around;
+}
+
+.button {
+  width: 100px;
+  cursor: pointer;
+  color: rgb(76, 54, 179);
+  font-weight: 700;
+  font-size: large;
+}
