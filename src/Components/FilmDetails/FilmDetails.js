@@ -14,15 +14,15 @@ const stdUrl = "https://api.themoviedb.org/3";
 function FilmDetail(props) {
   const history = useHistory();
   const location = useLocation();
-
   const [detArray, setDetArray] = useState([]);
   const [generes, setGeneres] = useState([]);
   const [cast, setCast] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [serch, setSerch] = useState("");
 
   const { id } = props.match.params;
-
   useEffect(() => {
+    setSerch(location.state.title.query);
     fetch(`${stdUrl}/movie/${id}?api_key=${key}&language=en-US`)
       .then((res) => res.json())
       .then((res) => {
@@ -40,12 +40,18 @@ function FilmDetail(props) {
   const onGoBack = () => {
     history.push(location?.state?.from ?? "/home");
   };
-
   return (
     <>
-      <button className={s.button} type="button" onClick={onGoBack}>
-        ⬅ Go back
-      </button>
+      <Link
+        to={{
+          pathname: location?.state?.from.location,
+          state: { from: location },
+        }}
+      >
+        <button className={s.button} type="button" onClick={onGoBack}>
+          ⬅ Go back
+        </button>
+      </Link>
       <div className={s.mainContainer}>
         <div className={s.container}>
           {detArray.poster_path && <img src={`${STDImg}${detArray.poster_path}`} alt="" />}
@@ -63,8 +69,22 @@ function FilmDetail(props) {
               </p>
               <div className={s.link}>
                 <h4>Additional information:</h4>
-                <Link to={`${props.match.url}/cast`}>Cast</Link>
-                <Link to={`${props.match.url}/reviews`}>Reviews</Link>
+                <Link
+                  to={{
+                    pathname: `${props.match.url}/cast`,
+                    state: { from: location.state.from, title: { query: serch } },
+                  }}
+                >
+                  Cast
+                </Link>
+                <Link
+                  to={{
+                    pathname: `${props.match.url}/reviews`,
+                    state: { from: location.state.from, title: { query: serch } },
+                  }}
+                >
+                  Reviews
+                </Link>
               </div>
             </div>
           ) : (

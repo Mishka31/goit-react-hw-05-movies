@@ -1,23 +1,34 @@
-import { useState } from "react";
-import { Link, Route, useLocation } from "react-router-dom";
-import Cast from "../../Components/Cast/Cast.js";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import s from "./Search.module.css";
 
-const Search = (props, onSubmit) => {
-  const location = useLocation();
-
+const Search = (props) => {
   const [value, setValue] = useState("");
   const [array, setArray] = useState([]);
+  const [query, setQuery] = useState("");
 
-  const handleChange = (e) => {
-    setValue(e.currentTarget.value);
+  const location = useLocation();
+  console.log(location);
+  useEffect(() => {
+    if (location.state && !value) {
+      fetch(
+        `https://api.themoviedb.org/3/search/movie?api_key=1d02cf870156c36c20bd2c4215c07516&language=en-US&query=${location.state.from.state.title.query}&page=1&include_adult=false`
+      )
+        .then((res) => res.json())
+        .then((res) => setArray(res.results));
+    }
+  }, [location.state, value]);
+
+  const reset = () => {
+    setValue("");
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(value);
     if (value.trim() === "") {
       return alert("Пустое поле");
     }
+    setQuery(value);
     fetch(
       `https://api.themoviedb.org/3/search/movie?api_key=1d02cf870156c36c20bd2c4215c07516&language=en-US&query=${value}&page=1&include_adult=false`
     )
@@ -25,15 +36,15 @@ const Search = (props, onSubmit) => {
       .then((res) => setArray(res.results));
     reset();
   };
-  const reset = () => {
-    setValue("");
+  const handleChange = (e) => {
+    setValue(e.currentTarget.value);
   };
 
   return (
     <div className={s.container}>
       <h1>Search Page</h1>
       <form onSubmit={handleSubmit}>
-        <input type="text" onChange={handleChange} placeholder="Enter a movie name" />
+        <input type="text" onChange={handleChange} value={value} placeholder="Enter a movie name" />
         <button type="submit">Search</button>
       </form>
 
@@ -43,7 +54,7 @@ const Search = (props, onSubmit) => {
             <Link
               to={{
                 pathname: `/search/${e.id}`,
-                state: { from: location, title: "Go back to Search" },
+                state: { from: location, title: { query } },
               }}
             >
               {e.title}
@@ -51,10 +62,6 @@ const Search = (props, onSubmit) => {
           </li>
         ))}
       </ul>
-      <Route
-        path={`${props.match.path}/${value}`}
-        render={(props) => <Cast {...props} casts={array} />}
-      />
     </div>
   );
 };
