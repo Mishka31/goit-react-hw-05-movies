@@ -1,17 +1,27 @@
-import React from "react";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getMovieReviews } from "../../services/api";
 
-const Reviews = ({ reviews }) => {
-  if (!reviews.length > 0) {
-    return <h1>We dont have any reviews for this movie...!</h1>;
-  }
+const Reviews = () => {
+  const [reviews, setReviews] = useState([]);
+
+  const { slug } = useParams();
+  const id = slug.match(/[a-z0-9]+$/)[0];
+
+  useEffect(() => {
+    getMovieReviews(id).then((result) => setReviews([...result.results]));
+  }, [id]);
+
   return (
     <ul>
-      {reviews.map((rev) => (
-        <li key={rev.id}>
-          <h2>Author: {rev.author}</h2>
-          <p>{rev.content}</p>
-        </li>
-      ))}
+      {reviews &&
+        reviews.map(({ author, content, id }) => (
+          <li key={id}>
+            <h2>Author: {author}</h2>
+            <p>{content}</p>
+          </li>
+        ))}
+      {reviews && reviews.length === 0 && <p>We dont have any reviews for this movie</p>}
     </ul>
   );
 };

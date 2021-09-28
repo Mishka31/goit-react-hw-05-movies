@@ -4,6 +4,8 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import slugify from "slugify";
+import { getTrendingMovies } from "../../services/api";
 import s from "./Home.module.css";
 
 function Films(props) {
@@ -11,9 +13,7 @@ function Films(props) {
   const [films, setFilms] = useState([]);
 
   useEffect(() => {
-    fetch("https://api.themoviedb.org/3/trending/all/week?api_key=1d02cf870156c36c20bd2c4215c07516")
-      .then((res) => res.json())
-      .then((res) => setFilms(res.results));
+    getTrendingMovies().then((res) => setFilms(res.results));
   }, []);
 
   return (
@@ -29,20 +29,23 @@ function Films(props) {
         }}
         aria-label="contacts"
       >
-        {films.map((film) => (
-          <ListItem key={film.id} disablePadding>
-            <Link
-              to={{
-                pathname: `${props.match.url}/${film.id}`,
-                state: { from: location, title: "Go back to Home" },
-              }}
-            >
-              <ListItemButton sx={{ width: "400px", padding: 0, textAlign: "center" }}>
-                <ListItemText primary={film.name ?? film.title} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-        ))}
+        {films &&
+          films.map((film) => (
+            <ListItem key={film.id} disablePadding>
+              <Link
+                to={{
+                  pathname: `${props.match.url}/${slugify(`${film.name ?? film.title} ${film.id}`, {
+                    lower: true,
+                  })}`,
+                  state: { from: location },
+                }}
+              >
+                <ListItemButton sx={{ width: "400px", padding: 0, textAlign: "center" }}>
+                  <ListItemText primary={film.name ?? film.title} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          ))}
       </List>
     </div>
   );

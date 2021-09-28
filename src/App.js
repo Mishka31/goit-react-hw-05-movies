@@ -1,12 +1,14 @@
-import React from "react";
-import { Route, NavLink, Switch } from "react-router-dom";
-import Home from "./pages/Home/home.js";
-import Search from "./pages/Search/Search.js";
-import NotFound from "./pages/NotFound/NotFound.js";
-import FilmDetails from "./Components/FilmDetails/FilmDetails.js";
+import { lazy, Suspense } from "react";
+import { Route, NavLink, Switch, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import s from "./App.module.css";
 import Button from "@material-ui/core/Button";
+
+const HomePage = lazy(() => import("./pages/Home/home.js" /* webpackChunkName: "home-page" */));
+const Search = lazy(() => import("./pages/Search/Search.js" /* webpackChunkName: "Search" */));
+const FilmDetails = lazy(() =>
+  import("./Components/FilmDetails/FilmDetails.js" /* webpackChunkName: "FilmDetails" */)
+);
 
 const App = () => (
   <>
@@ -22,14 +24,15 @@ const App = () => (
         </Button>
       </NavLink>
     </div>
-
-    <Switch>
-      <Route path="/home/:id" component={FilmDetails} />
-      <Route path="/search/:id" component={FilmDetails} />
-      <Route path="/home" component={Home} />
-      <Route path="/search" component={Search} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<h1>DOWNLOAD</h1>}>
+      <Switch>
+        <Route path="/home/:slug" component={FilmDetails} />
+        <Route path="/search/:slug" component={FilmDetails} />
+        <Route path="/home" exact component={HomePage} />
+        <Route path="/search" exact component={Search} />
+        <Redirect to="/" />
+      </Switch>
+    </Suspense>
     <ToastContainer position="top-center" autoClose={3000} />
   </>
 );
